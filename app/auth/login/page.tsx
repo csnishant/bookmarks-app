@@ -11,6 +11,7 @@ import {
   LogIn,
   KeyRound,
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,7 +39,11 @@ export default function LoginPage() {
     }
 
     // Securely routes your authenticated user straight to the dashboard
-    router.push("/dashboard");
+    toast.success("Login successful!");
+
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 500);
   };
 
   return (

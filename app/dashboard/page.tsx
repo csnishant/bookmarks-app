@@ -9,6 +9,7 @@ import Navbar from "@/components/dashboard/Navbar";
 import HandleForm from "@/components/dashboard/HandleForm";
 import BookmarkForm from "@/components/dashboard/BookmarkForm";
 import BookmarkList from "@/components/dashboard/BookmarkList";
+import { toast } from "sonner";
 
 interface BookmarkItem {
   id: string;
@@ -94,10 +95,15 @@ export default function DashboardPage() {
       .upsert({ id: user.id, handle: cleanHandle });
 
     setIsSavingHandle(false);
-
     if (error) {
-      setHandleMsg({ type: "error", text: "Handle already taken or invalid!" });
+      toast.error("Handle already taken or invalid!");
+      setHandleMsg({
+        type: "error",
+        text: "Handle already taken or invalid!",
+      });
     } else {
+      toast.success(`@${cleanHandle} claimed successfully!`);
+
       setHandle(cleanHandle);
       setHandleMsg({
         type: "success",
@@ -108,8 +114,10 @@ export default function DashboardPage() {
 
   const handleSaveBookmark = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !url) return;
-    setActionLoading(true);
+    if (!title || !url) {
+      toast.error("Title and URL are required");
+      return;
+    }
 
     let formattedUrl = url.trim();
     if (!/^https?:\/\//i.test(formattedUrl)) {
@@ -136,7 +144,12 @@ export default function DashboardPage() {
             b.id === editingId ? { ...b, ...bookmarkPayload } : b,
           ),
         );
+
+        toast.success("Bookmark updated successfully!");
+
         setEditingId(null);
+      } else {
+        toast.error("Failed to update bookmark");
       }
     } else {
       const { data, error } = await supabase
@@ -149,13 +162,14 @@ export default function DashboardPage() {
       console.log("BOOKMARK ERROR:", error);
 
       if (error) {
-        alert(error.message);
+        toast.error(error.message);
         setActionLoading(false);
         return;
       }
 
       if (data) {
         setBookmarks([data, ...bookmarks]);
+        toast.success("Bookmark added successfully!");
       }
     }
 
@@ -174,6 +188,9 @@ export default function DashboardPage() {
 
     if (!error) {
       setBookmarks(bookmarks.filter((b) => b.id !== id));
+      toast.success("Bookmark deleted successfully!");
+    } else {
+      toast.error("Failed to delete bookmark");
     }
   };
 
@@ -192,8 +209,18 @@ export default function DashboardPage() {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/auth/login");
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      toast.error("Failed to logout");
+      return;
+    }
+
+    toast.success("Logged out successfully");
+
+    setTimeout(() => {
+      router.push("/auth/login");
+    }, 500);
   };
 
   if (loading) {
