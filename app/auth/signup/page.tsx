@@ -29,24 +29,35 @@ export default function SignupPage() {
     setSuccessMsg("");
 
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
       options: {
-        // Essential configuration hook for your Resend custom workflow/redirects
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
     setLoading(false);
 
+    // 1. Agar basic Auth failure error aata hai
     if (error) {
       setErrorMsg(error.message);
       return;
     }
 
+    // 2. DUPLICATE EMAIL PROTECTION RULE (OBFUSCATION BYPASS):
+    // Supabase security reasons se check karta hai ki agar email already exists hai,
+    // toh identities array empty ([]) aati hai taaki unauthorized persons ko real status leak na ho.
+    if (data?.user && data.user.identities?.length === 0) {
+      setErrorMsg("This email is already registered. Please sign in instead.");
+      return;
+    }
+
+    // 3. Success State
     setSuccessMsg(
       "Verification link sent! Please check your email inbox to activate your account.",
     );
+    setEmail("");
+    setPassword("");
   };
 
   return (

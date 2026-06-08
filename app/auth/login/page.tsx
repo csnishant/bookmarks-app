@@ -27,23 +27,23 @@ export default function LoginPage() {
     setMsg("");
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim(), // Safe trim spaces
       password,
     });
 
-    setLoading(false);
-
     if (error) {
       setMsg(error.message);
+      setLoading(false);
       return;
     }
 
-    // Securely routes your authenticated user straight to the dashboard
-    toast.success("Login successful!");
+    // Success notification popup
+    toast.success("Login successful! Redirecting...");
 
+    // FIX: Hard window location redirect use karein taaki cookies pure pipeline me sync ho jayein
     setTimeout(() => {
-      router.push("/dashboard");
-    }, 500);
+      window.location.href = "/dashboard";
+    }, 600);
   };
 
   return (
