@@ -41,7 +41,7 @@ export default function DashboardPage() {
         error,
       } = await supabase.auth.getUser();
       if (error || !user) {
-        router.push("/login");
+        router.push("/auth/login");
         return;
       }
       setUser(user);
@@ -193,7 +193,7 @@ export default function DashboardPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/login");
+    router.push("/auth/login");
   };
 
   if (loading) {
