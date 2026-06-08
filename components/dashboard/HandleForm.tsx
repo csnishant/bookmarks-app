@@ -24,6 +24,13 @@ export default function HandleForm({
   handleMsg,
   onSaveHandle,
 }: HandleFormProps) {
+  // URL safe handle banane ke liye client-side helper
+  // Yeh spaces hata dega, lowercase karega aur special characters remove karega
+  const displayUrlHandle = handle
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, "");
+
   return (
     <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 p-6 rounded-2xl shadow-xl">
       <h2 className="text-sm font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-2 mb-4">
@@ -71,15 +78,17 @@ export default function HandleForm({
           <p>{handleMsg.text}</p>
         </div>
       )}
-      {handle && handleMsg.type !== "error" && (
+
+      {/* FIXED: Ab link sirf tabhi dikhega jab handle database me save ho chuka ho (success state) */}
+      {displayUrlHandle && handleMsg.type === "success" && (
         <p className="mt-3 text-[11px] text-slate-500">
           Your live public profile:{" "}
           <a
-            href={`/${handle}`}
+            href={`/${displayUrlHandle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-400 hover:underline inline-flex items-center gap-0.5">
-            /{handle} <ExternalLink className="w-2.5 h-2.5" />
+            className="text-indigo-400 hover:underline inline-flex items-center gap-0.5 font-mono">
+            /{displayUrlHandle} <ExternalLink className="w-2.5 h-2.5" />
           </a>
         </p>
       )}
