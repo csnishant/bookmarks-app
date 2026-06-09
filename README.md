@@ -48,8 +48,4 @@ To make the code clean, readable, and production-ready for code reviews, I divid
 * **Auto HTTPS Protocol Check:** If a user types a raw link like `github.com` without adding a protocol, the application auto-appends `https://` before sending it to PostgreSQL to avoid broken link redirects.
 * **Input Sanitization:** Handle inputs are heavily sanitized in real-time using regular expressions to prevent spaces, uppercase letters, and dangerous symbols.
 
----
 
-
-Best regards,  
-**Nishant Choudhary**
